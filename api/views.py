@@ -1,6 +1,9 @@
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.generics import CreateAPIView, ListAPIView
 from django.contrib.auth import authenticate
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status, permissions, generics
+from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from api.serializers import (ClientLoginSerializer,
                              ClientCreateSerializer,
@@ -8,14 +11,12 @@ from api.serializers import (ClientLoginSerializer,
                              CompanyCreateSerializer,
                              VacancySerializer,
                              FavoriteSerializer,
-                             ResponseSerializer
+                             ResponseSerializer,
+                             ProfileSerializer, VacancyCreateSerializer
                              )
-from database.models import Vacancy
 from database.models import Response as ResponseModel
-from user_auth.models import CustomUser
-from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework import status, permissions, generics
+from database.models import Vacancy
+from user_auth.models import CustomUser, Client
 
 
 class ClientPermission(permissions.BasePermission):
@@ -36,7 +37,6 @@ class ClientCreateView(generics.GenericAPIView):
 
     def post(self, request):
         data = request.data
-
         serializer = self.serializer_class(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -111,19 +111,18 @@ class CompanyLoginView(CreateAPIView):
 
 # Vacancy Views
 class VacancyCreateView(CreateAPIView):
-    serializer_class = VacancySerializer
+    serializer_class = VacancyCreateSerializer
     permission_classes = [CompanyPermission]
 
-    def post(self, request, *args, **kwargs):
-        request.data['company'] = request.user.id
-        return super().post(request, *args, **kwargs)
-
+    # def post(self, request, *args, **kwargs):
+    #     request.data['company'] = request.user.id
+    #     return super().post(request, *args, **kwargs)
 
 class VacancyListView(ListAPIView):
     serializer_class = VacancySerializer
     queryset = Vacancy.objects.all()
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('name', 'occupation', 'city', 'salary_min', 'salary_max')
+    filterset_fields = ('name', 'occupation', 'city', 'salary_min', 'salary_max', 'specialization' )
 
 
 class VacancyDetailView(ListAPIView):
@@ -159,3 +158,24 @@ class ResponseListView(generics.ListAPIView):
 
     def get_queryset(self):
         return ResponseModel.objects.filter(client=self.request.user.id)
+
+
+class LogoutView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data['refresh_token']
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProfileView(generics.RetrieveUpdateAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [ClientPermission]
+
+    def get_queryset(self):
+        return Client.objects.filter(id=self.kwargs['pk'])

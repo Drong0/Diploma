@@ -67,8 +67,8 @@ class CompanyCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Company
-        fields = ['email', 'password', 'city', 'company_name', 'user_type']
-        extra_kwargs = {'password': {'write_only': True}, 'user_type': {'read_only': True}}
+        fields = ['email', 'password', 'city', 'company_name', 'company_description', 'user_type']
+        extra_kwargs = {'password': {'write_only': True}, 'user_type': {'hidden': True}}
 
     def validate(self, attrs):
         email_exists = Client.objects.filter(email=attrs['email']).exists()
@@ -95,10 +95,23 @@ class CompanyLoginSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}, 'user_type': {'read_only': True}}
 
 
-class VacancySerializer(serializers.ModelSerializer):
+class VacancyCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vacancy
         fields = '__all__'
+
+
+
+
+class VacancySerializer(serializers.ModelSerializer):
+    company_name = serializers.CharField(source='company.company_name', read_only=True)
+    city_name = serializers.CharField(source='city.city', read_only=True)
+    occupation_name = serializers.CharField(source='occupation.name')
+
+    class Meta:
+        model = Vacancy
+        fields = ['name', 'content', 'city','city_name', 'salary_min', 'salary_max', 'company_name',
+                  'status', 'occupation_name', 'specialization', 'id']
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
@@ -111,3 +124,9 @@ class ResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Response
         fields = '__all__'
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Client
+        fields = ['id', 'email', 'city', 'first_name', 'last_name', 'phone', 'cv']

@@ -60,7 +60,7 @@ class Client(CustomUser):
     city = models.ForeignKey(City, on_delete=models.CASCADE, null=True, blank=True, default=1)
     regex = RegexValidator(regex=r'^\+?77([0124567][0-8]\d{7})$')
     phone = models.CharField(validators=[regex], unique=True, max_length=12)
-    cv = models.FileField(upload_to='cv/', null=True, blank=True)
+    cv = models.FileField(upload_to='cv', null=True, blank=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
     username = None
