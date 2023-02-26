@@ -14,10 +14,16 @@ class Occupation(models.Model):
 class Skill(models.Model):
     name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.name
+
 
 class Specialization(models.Model):
     name = models.CharField(max_length=255)
     skills = models.ForeignKey(Skill, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
 
 
 class Vacancy(models.Model):
@@ -42,6 +48,9 @@ class Vacancy(models.Model):
     status = models.BooleanField(choices=STATUS, default=True)
     occupation = models.ForeignKey(Occupation, on_delete=models.CASCADE, null=True, blank=True)
     specialization = models.ForeignKey(Specialization, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Response(models.Model):
