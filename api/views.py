@@ -3,6 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, permissions, generics
 from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from api.filters import VacancyFilter
@@ -15,7 +16,7 @@ from api.serializers import (ClientLoginSerializer,
                              ResponseSerializer,
                              ProfileSerializer, VacancyCreateSerializer
                              )
-from database.models import Response as ResponseModel
+from database.models import Response as ResponseModel, Favorite
 from database.models import Vacancy
 from user_auth.models import CustomUser, Client
 
@@ -119,6 +120,7 @@ class VacancyCreateView(CreateAPIView):
     #     request.data['company'] = request.user.id
     #     return super().post(request, *args, **kwargs)
 
+
 class VacancyListView(ListAPIView):
     serializer_class = VacancySerializer
     queryset = Vacancy.objects.all()
@@ -132,24 +134,42 @@ class VacancyDetailView(ListAPIView):
         return Vacancy.objects.filter(id=self.kwargs['pk'])
 
 
-class FavoriteAddView(CreateAPIView):
+class FavoriteAddView(APIView):
     permission_classes = [ClientPermission]
-    serializer_class = FavoriteSerializer
 
-    def post(self, request, *args, **kwargs):
-        request.data['client'] = request.user.id
-        request.data['vacancy'] = self.kwargs['pk']
-        return super().post(request, *args, **kwargs)
+    # serializer_class = FavoriteSerializer
+
+    def post(self, request, pk):
+        try:
+            vacancy = Vacancy.objects.get(pk=pk)
+        except Vacancy.DoesNotExist:
+            return Response({'error': 'Vacancy does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+        favorite = Favorite(vacancy=vacancy, client_id=request.user.id)
+        favorite.save()
+
+        return Response({'success': 'Vacancy added to favorites'}, status=status.HTTP_201_CREATED)
+
+    # def post(self, request, *args, **kwargs):
+    #     user = request.user
+    #     request.data['client'] = user.id
+    #     return super().post(request, *args, **kwargs)
 
 
-class ResponseAddView(CreateAPIView):
+class ResponseAddView(APIView):
     permission_classes = [ClientPermission]
-    serializer_class = ResponseSerializer
+    #serializer_class = ResponseSerializer
 
-    def post(self, request, *args, **kwargs):
-        request.data['client'] = request.user.id
-        request.data['vacancy'] = self.kwargs['pk']
-        return super().post(request, *args, **kwargs)
+    def post(self, request, pk):
+        try:
+            vacancy = Vacancy.objects.get(pk=pk)
+        except Vacancy.DoesNotExist:
+            return Response({'error': 'Vacancy does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+        response = ResponseModel(vacancy=vacancy, client_id=request.user.id)
+        response.save()
+
+        return Response({'success': 'Vacancy added to responses'}, status=status.HTTP_201_CREATED)
 
 
 class ResponseListView(generics.ListAPIView):
