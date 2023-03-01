@@ -5,6 +5,7 @@ from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIVie
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from api.filters import VacancyFilter
 from api.serializers import (ClientLoginSerializer,
                              ClientCreateSerializer,
                              CompanyLoginSerializer,
@@ -121,8 +122,7 @@ class VacancyCreateView(CreateAPIView):
 class VacancyListView(ListAPIView):
     serializer_class = VacancySerializer
     queryset = Vacancy.objects.all()
-    filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('name', 'occupation', 'city', 'salary_min', 'salary_max', 'specialization' )
+    filterset_class = VacancyFilter
 
 
 class VacancyDetailView(ListAPIView):
