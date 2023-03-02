@@ -5,8 +5,8 @@ from . import views
 
 router = DefaultRouter()
 
-router.register("client", views.ClientViewSet)
-router.register("company", views.CompanyViewSet)
+router.register("clients", views.ClientViewSet)
+router.register("companies", views.CompanyViewSet)
 urlpatterns = router.urls
 urlpatterns += [
     path('client/register/', views.ClientCreateView.as_view(), name='register'),

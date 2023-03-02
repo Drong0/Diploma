@@ -15,7 +15,8 @@ from api.serializers import (ClientLoginSerializer,
                              VacancySerializer,
                              FavoriteSerializer,
                              ResponseSerializer,
-                             ProfileSerializer, VacancyCreateSerializer, ClientSerializer, CompanySerializer
+                             ProfileSerializer, VacancyCreateSerializer, ClientSerializer, CompanySerializer,
+                             LogoutSerializer
                              )
 from database.models import Response as ResponseModel, Favorite
 from database.models import Vacancy
@@ -45,7 +46,6 @@ class ClientCreateView(generics.GenericAPIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class ClientLoginView(CreateAPIView):
     """Class providing user login"""
@@ -80,17 +80,9 @@ class CompanyPermission(permissions.BasePermission):
         return False
 
 
-class CompanyCreateView(generics.GenericAPIView):
+class CompanyCreateView(CreateAPIView):
+    queryset = Company.objects.all()
     serializer_class = CompanyCreateSerializer
-
-    def post(self, request):
-        data = request.data
-
-        serializer = self.serializer_class(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CompanyLoginView(CreateAPIView):
@@ -178,8 +170,9 @@ class ResponseListView(generics.ListAPIView):
         return ResponseModel.objects.filter(client=self.request.user.id)
 
 
-class LogoutView(generics.GenericAPIView):
+class LogoutView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    serializer_class = LogoutSerializer
 
     def post(self, request):
         try:
@@ -215,7 +208,7 @@ class ClientViewSet(ModelViewSet):
     def me(self, request):
         if isinstance(self.request.user.id, int) is False:
             return Response({'error': 'User is not authenticated'}, status=status.HTTP_400_BAD_REQUEST)
-        queryset = Client.objects.filter(id=self.request.user.id).first()
+        queryset = Client.objects.filter(id=self.request.user.id).prefetch_related('client').first()
         serializer = self.get_serializer(queryset, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
