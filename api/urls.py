@@ -1,10 +1,14 @@
 from django.urls import path
+from rest_framework.routers import DefaultRouter
 
 from . import views
 
-# Create your urls here.
+router = DefaultRouter()
 
-urlpatterns = [
+router.register("client", views.ClientViewSet)
+router.register("company", views.CompanyViewSet)
+urlpatterns = router.urls
+urlpatterns += [
     path('client/register/', views.ClientCreateView.as_view(), name='register'),
     path('client/login/', views.ClientLoginView.as_view(), name='login'),
 

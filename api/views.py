@@ -1,8 +1,10 @@
 from django.contrib.auth import authenticate
 from rest_framework import status, permissions, generics
+from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from api.filters import VacancyFilter
@@ -13,11 +15,11 @@ from api.serializers import (ClientLoginSerializer,
                              VacancySerializer,
                              FavoriteSerializer,
                              ResponseSerializer,
-                             ProfileSerializer, VacancyCreateSerializer
+                             ProfileSerializer, VacancyCreateSerializer, ClientSerializer, CompanySerializer
                              )
 from database.models import Response as ResponseModel, Favorite
 from database.models import Vacancy
-from user_auth.models import CustomUser, Client
+from user_auth.models import CustomUser, Client, Company
 
 
 class ClientPermission(permissions.BasePermission):
@@ -203,3 +205,29 @@ class FavoriteListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Favorite.objects.filter(client=self.request.user.id)
+
+
+class ClientViewSet(ModelViewSet):
+    queryset = Client.objects.all()
+    serializer_class = ClientSerializer
+
+    @action(detail=False)
+    def me(self, request):
+        if isinstance(self.request.user.id, int) is False:
+            return Response({'error': 'User is not authenticated'}, status=status.HTTP_400_BAD_REQUEST)
+        queryset = Client.objects.filter(id=self.request.user.id).first()
+        serializer = self.get_serializer(queryset, many=False)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class CompanyViewSet(ModelViewSet):
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializer
+
+    @action(detail=False)
+    def me(self, request):
+        if isinstance(self.request.user.id, int) is False:
+            return Response({'error': 'User is not authenticated'}, status=status.HTTP_400_BAD_REQUEST)
+        queryset = Company.objects.filter(id=self.request.user.id).first()
+        serializer = self.get_serializer(queryset, many=False)
+        return Response(serializer.data, status=status.HTTP_200_OK)
