@@ -58,7 +58,13 @@ class Response(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True)
     date = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.vacancy.name
+
 
 class Favorite(models.Model):
     vacancy = models.ForeignKey(Vacancy, on_delete=models.CASCADE, null=True, blank=True)
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return self.vacancy.name
