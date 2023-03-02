@@ -16,6 +16,7 @@ urlpatterns = [
     path('vacancy/<int:pk>', views.VacancyDetailView.as_view(), name='vacancies'),
     path('vacancy/<int:pk>/like/', views.FavoriteAddView.as_view(), name='like'),
     path('vacancy/<int:pk>/response/', views.ResponseAddView.as_view(), name='response'),
+    path('user/favorite/list/', views.FavoriteListView.as_view(), name='favorite'),
     path('vacancy/response/list/', views.ResponseListView.as_view(), name='response'),
     path('profile/<int:pk>', views.ProfileView.as_view(), name='profile'),
     path('logout/', views.LogoutView.as_view(), name='logout'),

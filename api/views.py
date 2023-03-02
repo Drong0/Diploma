@@ -1,7 +1,6 @@
 from django.contrib.auth import authenticate
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, permissions, generics
-from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -127,11 +126,9 @@ class VacancyListView(ListAPIView):
     filterset_class = VacancyFilter
 
 
-class VacancyDetailView(ListAPIView):
+class VacancyDetailView(RetrieveAPIView):
     serializer_class = VacancySerializer
-
-    def get_queryset(self):
-        return Vacancy.objects.filter(id=self.kwargs['pk'])
+    queryset = Vacancy.objects.all()
 
 
 class FavoriteAddView(APIView):
@@ -158,7 +155,6 @@ class FavoriteAddView(APIView):
 
 class ResponseAddView(APIView):
     permission_classes = [ClientPermission]
-    #serializer_class = ResponseSerializer
 
     def post(self, request, pk):
         try:
@@ -199,3 +195,11 @@ class ProfileView(generics.RetrieveUpdateAPIView, ListCreateAPIView):
 
     def get_queryset(self):
         return Client.objects.filter(id=self.kwargs['pk'])
+
+
+class FavoriteListView(generics.ListAPIView):
+    serializer_class = FavoriteSerializer
+    permission_classes = [ClientPermission]
+
+    def get_queryset(self):
+        return Favorite.objects.filter(client=self.request.user.id)
