@@ -1,17 +1,41 @@
 from rest_framework import serializers
 
-from database.models import Vacancy, Favorite, Response
-from user_auth.models import Company, Client
+from database.models import Vacancy, Favorite, Response, Occupation, Skill, Specialization
+from user_auth.models import Company, Client, City
 from django.contrib.auth.hashers import make_password
+
+
+class CitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = City
+        fields = '__all__'
+
+
+class OccupationSerialazer(serializers.ModelSerializer):
+    class Meta:
+        model = Occupation
+        fields = '__all__'
+
+
+class SkillSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Skill
+        fields = '__all__'
+
+
+class SpecializationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Specialization
+        fields = '__all__'
 
 
 class ClientSerializer(serializers.ModelSerializer):
     token = serializers.CharField(max_length=255, read_only=True)
-    city_name = serializers.CharField(source='city.name', read_only=True)
+    city = CitySerializer(read_only=True)
 
     class Meta:
         model = Client
-        fields = ['id', 'token', 'email', 'city_name', 'first_name', 'last_name', 'phone']
+        fields = ['id', 'token', 'email', 'city', 'first_name', 'last_name', 'phone']
         extra_kwargs = {'password': {'write_only': True}, 'user_type': {'read_only': True}}
 
 
@@ -53,6 +77,7 @@ class ClientCreateSerializer(serializers.ModelSerializer):
 
 class CompanySerializer(serializers.ModelSerializer):
     token = serializers.CharField(max_length=255, read_only=True)
+    city = CitySerializer(read_only=True)
 
     class Meta:
         model = Company
@@ -104,16 +129,16 @@ class VacancyCreateSerializer(serializers.ModelSerializer):
 
 class VacancySerializer(serializers.ModelSerializer):
     company_name = serializers.CharField(source='company.company_name', read_only=True)
-    city_name = serializers.CharField(source='city.city', read_only=True)
-    occupation_name = serializers.CharField(source='occupation.name')
-    specialization_name = serializers.CharField(source='specialization.name')
+    city = CitySerializer(read_only=True)
+    occupation = OccupationSerialazer()
+    specialization = SpecializationSerializer()
 
     company = CompanySerializer(read_only=True, many=False)
 
     class Meta:
         model = Vacancy
-        fields = ['name', 'content', 'city', 'city_name', 'salary_min', 'salary_max', 'company', 'company_name',
-                  'status', 'occupation_name', 'specialization_name', 'id']
+        fields = ['name', 'content', 'city', 'salary_min', 'salary_max', 'company', 'company_name',
+                  'status', 'occupation', 'specialization', 'id']
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
@@ -135,11 +160,11 @@ class ResponseSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    city_name = serializers.CharField(source='city.name', read_only=True)
+    city = CitySerializer(read_only=True)
 
     class Meta:
         model = Client
-        fields = ['id', 'email', 'city', 'first_name', 'city_name', 'last_name', 'phone', 'cv']
+        fields = ['id', 'email', 'city', 'first_name', 'last_name', 'phone', 'cv']
 
 
 class LogoutSerializer(serializers.Serializer):
