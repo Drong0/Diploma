@@ -66,8 +66,7 @@ class ClientLoginView(CreateAPIView):
             user = CustomUser.objects.get(email=user['email'])
             token = RefreshToken.for_user(user)
             return Response({'refresh_token': str(token),
-                             'access_token': str(token.access_token),
-                             'user_type': user.user_type}, status=status.HTTP_200_OK)
+                             'access_token': str(token.access_token)}, status=status.HTTP_200_OK)
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
 

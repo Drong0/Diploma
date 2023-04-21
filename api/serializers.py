@@ -1,8 +1,13 @@
 from rest_framework import serializers
 
 from database.models import Vacancy, Favorite, Response, Occupation, Skill, Specialization
-from user_auth.models import Company, Client, City
+from user_auth.models import Company, Client, City, CustomUser
 from django.contrib.auth.hashers import make_password
+
+
+class TokenSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+    access = serializers.CharField()
 
 
 class CitySerializer(serializers.ModelSerializer):
@@ -41,10 +46,11 @@ class ClientSerializer(serializers.ModelSerializer):
 
 class ClientLoginSerializer(serializers.ModelSerializer):
     email = serializers.CharField(max_length=255)
+    token = TokenSerializer(read_only=True)
 
     class Meta:
         model = Client
-        fields = ['email', 'password']
+        fields = ['email', 'password', 'token']
 
 
 class ClientCreateSerializer(serializers.ModelSerializer):
@@ -53,14 +59,16 @@ class ClientCreateSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(max_length=50)
     last_name = serializers.CharField(max_length=50)
     phone = serializers.CharField(max_length=50)
+    token = TokenSerializer(read_only=True)
 
     class Meta:
         model = Client
-        fields = ['email', 'password', 'city', 'first_name', 'last_name', 'phone']
+        fields = ['email', 'password', 'city', 'first_name', 'last_name', 'phone', 'token']
         extra_kwargs = {'password': {'write_only': True}, 'user_type': {'read_only': True}}
 
     def validate(self, attrs):
-        email_exists = Client.objects.filter(email=attrs['email']).exists()
+        email_exists = CustomUser.objects.filter(email=attrs['email']).exists()
+
         if email_exists:
             raise serializers.ValidationError('Email already exists')
         return super().validate(attrs)
@@ -89,14 +97,15 @@ class CompanyCreateSerializer(serializers.ModelSerializer):
     email = serializers.CharField(max_length=255, required=True)
     user_type = 2
     company_name = serializers.CharField(max_length=50)
+    token = TokenSerializer(read_only=True)
 
     class Meta:
         model = Company
-        fields = ['email', 'password', 'city', 'company_name', 'company_description']
+        fields = ['email', 'password', 'city', 'company_name', 'company_description', 'token']
         extra_kwargs = {'password': {'write_only': True}, 'user_type': {'read_only': True}}
 
     def validate(self, attrs):
-        email_exists = Client.objects.filter(email=attrs['email']).exists()
+        email_exists = CustomUser.objects.filter(email=attrs['email']).exists()
         if email_exists:
             raise serializers.ValidationError('Email already exists')
         return super().validate(attrs)
