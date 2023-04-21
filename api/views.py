@@ -43,8 +43,13 @@ class ClientCreateView(generics.GenericAPIView):
         data = request.data
         serializer = self.serializer_class(data=data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            client = serializer.save()
+            refresh = RefreshToken.for_user(client)
+
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ClientLoginView(CreateAPIView):
@@ -80,9 +85,21 @@ class CompanyPermission(permissions.BasePermission):
         return False
 
 
-class CompanyCreateView(CreateAPIView):
-    queryset = Company.objects.all()
+class CompanyCreateView(generics.GenericAPIView):
     serializer_class = CompanyCreateSerializer
+
+    def post(self, request):
+        data = request.data
+        serializer = self.serializer_class(data=data)
+        if serializer.is_valid():
+            company = serializer.save()
+            refresh = RefreshToken.for_user(company)
+
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CompanyLoginView(CreateAPIView):
