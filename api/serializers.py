@@ -168,12 +168,20 @@ class ResponseSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ProfileSerializer(serializers.ModelSerializer):
+class ClientProfileSerializer(serializers.ModelSerializer):
     city = CitySerializer(read_only=True)
 
     class Meta:
         model = Client
         fields = ['id', 'email', 'city', 'first_name', 'last_name', 'phone', 'cv']
+
+
+class CompanyProfileSerializer(serializers.ModelSerializer):
+    city = CitySerializer(read_only=True)
+
+    class Meta:
+        model = Company
+        fields = "__all__"
 
 
 class LogoutSerializer(serializers.Serializer):

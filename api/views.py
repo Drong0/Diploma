@@ -14,9 +14,8 @@ from api.serializers import (ClientLoginSerializer,
                              CompanyCreateSerializer,
                              VacancySerializer,
                              FavoriteSerializer,
-                             ResponseSerializer,
-                             ProfileSerializer, VacancyCreateSerializer, ClientSerializer, CompanySerializer,
-                             LogoutSerializer
+                             ResponseSerializer, VacancyCreateSerializer, ClientSerializer, CompanySerializer,
+                             LogoutSerializer, ClientProfileSerializer, CompanyProfileSerializer
                              )
 from database.models import Response as ResponseModel, Favorite
 from database.models import Vacancy
@@ -51,6 +50,7 @@ class ClientCreateView(generics.GenericAPIView):
                 'access': str(refresh.access_token),
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ClientLoginView(CreateAPIView):
     """Class providing user login"""
@@ -200,12 +200,20 @@ class LogoutView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class ProfileView(generics.RetrieveUpdateAPIView, ListCreateAPIView):
-    serializer_class = ProfileSerializer
+class ClientProfileView(generics.RetrieveUpdateAPIView, ListCreateAPIView):
+    serializer_class = ClientProfileSerializer
     permission_classes = [ClientPermission]
 
     def get_queryset(self):
         return Client.objects.filter(id=self.kwargs['pk'])
+
+
+class CompanyProfileView(generics.RetrieveUpdateAPIView, ListCreateAPIView):
+    serializer_class = CompanyProfileSerializer
+    permission_classes = [CompanyPermission]
+
+    def get_queryset(self):
+        return Company.objects.filter(id=self.kwargs['pk'])
 
 
 class FavoriteListView(generics.ListAPIView):
