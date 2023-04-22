@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate
+from drf_spectacular.utils import extend_schema
 from rest_framework import status, permissions, generics
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView, RetrieveAPIView
@@ -15,7 +16,7 @@ from api.serializers import (ClientLoginSerializer,
                              VacancySerializer,
                              FavoriteSerializer,
                              ResponseSerializer, VacancyCreateSerializer, ClientSerializer, CompanySerializer,
-                             LogoutSerializer, ClientProfileSerializer, CompanyProfileSerializer
+                             LogoutSerializer, ClientProfileSerializer, CompanyProfileSerializer, TokenSerializer,
                              )
 from database.models import Response as ResponseModel, Favorite
 from database.models import Vacancy
@@ -38,6 +39,7 @@ class ClientPermission(permissions.BasePermission):
 class ClientCreateView(generics.GenericAPIView):
     serializer_class = ClientCreateSerializer
 
+    @extend_schema(responses=TokenSerializer)
     def post(self, request):
         data = request.data
         serializer = self.serializer_class(data=data)
@@ -56,6 +58,7 @@ class ClientLoginView(CreateAPIView):
     """Class providing user login"""
     serializer_class = ClientLoginSerializer
 
+    @extend_schema(responses=TokenSerializer)
     def post(self, request, *args, **kwargs):
         """Method providing user login"""
         serializer = self.serializer_class(data=request.data)
@@ -87,6 +90,7 @@ class CompanyPermission(permissions.BasePermission):
 class CompanyCreateView(generics.GenericAPIView):
     serializer_class = CompanyCreateSerializer
 
+    @extend_schema(responses=TokenSerializer)
     def post(self, request):
         data = request.data
         serializer = self.serializer_class(data=data)
@@ -105,6 +109,7 @@ class CompanyLoginView(CreateAPIView):
     """Class providing user login"""
     serializer_class = CompanyLoginSerializer
 
+    @extend_schema(responses=TokenSerializer)
     def post(self, request, *args, **kwargs):
         """Method providing user login"""
         serializer = self.serializer_class(data=request.data)
