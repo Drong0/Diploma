@@ -125,9 +125,9 @@ class VacancyCreateView(CreateAPIView):
     serializer_class = VacancyCreateSerializer
     permission_classes = [CompanyPermission]
 
-    # def post(self, request, *args, **kwargs):
-    #     request.data['company'] = request.user.id
-    #     return super().post(request, *args, **kwargs)
+    def post(self, request, *args, **kwargs):
+        request.data['company'] = request.user.id
+        return super().post(request, *args, **kwargs)
 
 
 class VacancyListView(ListAPIView):

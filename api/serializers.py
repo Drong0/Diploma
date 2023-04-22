@@ -181,7 +181,7 @@ class CompanyProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Company
-        fields = "__all__"
+        fields = ['email', 'city', 'company_name', 'company_description']
 
 
 class LogoutSerializer(serializers.Serializer):
