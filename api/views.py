@@ -39,7 +39,6 @@ class ClientPermission(permissions.BasePermission):
 class ClientCreateView(generics.GenericAPIView):
     serializer_class = ClientCreateSerializer
 
-    @extend_schema(responses=TokenSerializer)
     def post(self, request):
         data = request.data
         serializer = self.serializer_class(data=data)
@@ -48,6 +47,7 @@ class ClientCreateView(generics.GenericAPIView):
             refresh = RefreshToken.for_user(client)
 
             return Response({
+                'id': CustomUser.objects.get(email=client.email).id,
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             }, status=status.HTTP_201_CREATED)
@@ -58,7 +58,6 @@ class ClientLoginView(CreateAPIView):
     """Class providing user login"""
     serializer_class = ClientLoginSerializer
 
-    @extend_schema(responses=TokenSerializer)
     def post(self, request, *args, **kwargs):
         """Method providing user login"""
         serializer = self.serializer_class(data=request.data)
@@ -68,8 +67,12 @@ class ClientLoginView(CreateAPIView):
         if authenticate(email=user['email'], password=user['password']):
             user = CustomUser.objects.get(email=user['email'])
             token = RefreshToken.for_user(user)
-            return Response({'refresh_token': str(token),
-                             'access_token': str(token.access_token)}, status=status.HTTP_200_OK)
+            return Response({
+                'id': user.id,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'refresh_token': str(token),
+                'access_token': str(token.access_token)}, status=status.HTTP_200_OK)
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -90,7 +93,6 @@ class CompanyPermission(permissions.BasePermission):
 class CompanyCreateView(generics.GenericAPIView):
     serializer_class = CompanyCreateSerializer
 
-    @extend_schema(responses=TokenSerializer)
     def post(self, request):
         data = request.data
         serializer = self.serializer_class(data=data)
@@ -99,6 +101,7 @@ class CompanyCreateView(generics.GenericAPIView):
             refresh = RefreshToken.for_user(company)
 
             return Response({
+                'id': CustomUser.objects.get(email=company.email).id,
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             }, status=status.HTTP_201_CREATED)
@@ -109,7 +112,6 @@ class CompanyLoginView(CreateAPIView):
     """Class providing user login"""
     serializer_class = CompanyLoginSerializer
 
-    @extend_schema(responses=TokenSerializer)
     def post(self, request, *args, **kwargs):
         """Method providing user login"""
         serializer = self.serializer_class(data=request.data)
@@ -119,9 +121,10 @@ class CompanyLoginView(CreateAPIView):
         if authenticate(email=user['email'], password=user['password']):
             user = CustomUser.objects.get(email=user['email'])
             token = RefreshToken.for_user(user)
-            return Response({'refresh_token': str(token),
-                             'access_token': str(token.access_token),
-                             'user_type': user.user_type}, status=status.HTTP_200_OK)
+            return Response({'id': user.id,
+                            'company_name': user.company.company_name,
+                             'refresh_token': str(token),
+                             'access_token': str(token.access_token)}, status=status.HTTP_200_OK)
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
 

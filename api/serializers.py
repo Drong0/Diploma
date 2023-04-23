@@ -1,10 +1,13 @@
 from rest_framework import serializers
 
 from database.models import Vacancy, Favorite, Response, Occupation, Skill, Specialization
-from user_auth.models import Company, Client, City, CustomUser
+from user_auth.models import Company, Client, City, CustomUser, Country
 from django.contrib.auth.hashers import make_password
 
-
+class CountrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Country
+        fields = '__all__'
 class TokenSerializer(serializers.Serializer):
     refresh = serializers.CharField()
     access = serializers.CharField()
@@ -47,10 +50,13 @@ class ClientSerializer(serializers.ModelSerializer):
 class ClientLoginSerializer(serializers.ModelSerializer):
     email = serializers.CharField(max_length=255)
     token = TokenSerializer(read_only=True)
+    first_name = serializers.CharField(max_length=255, read_only=True)
+    last_name = serializers.CharField(max_length=255, read_only=True)
+    id = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Client
-        fields = ['email', 'password', 'token']
+        fields = ['email', 'password', 'token', 'first_name', 'last_name', 'id']
 
 
 class ClientCreateSerializer(serializers.ModelSerializer):
@@ -60,10 +66,11 @@ class ClientCreateSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(max_length=50)
     phone = serializers.CharField(max_length=50)
     token = TokenSerializer(read_only=True)
+    id = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Client
-        fields = ['email', 'password', 'city', 'first_name', 'last_name', 'phone', 'token']
+        fields = ['id','email', 'password', 'city', 'first_name', 'last_name', 'phone', 'token']
         extra_kwargs = {'password': {'write_only': True}, 'user_type': {'read_only': True}}
 
     def validate(self, attrs):
@@ -98,10 +105,11 @@ class CompanyCreateSerializer(serializers.ModelSerializer):
     user_type = 2
     company_name = serializers.CharField(max_length=50)
     token = TokenSerializer(read_only=True)
+    id = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Company
-        fields = ['email', 'password', 'city', 'company_name', 'company_description', 'token']
+        fields = ['id','email', 'password', 'city', 'company_name', 'company_description', 'token']
         extra_kwargs = {'password': {'write_only': True}, 'user_type': {'read_only': True}}
 
     def validate(self, attrs):
@@ -122,11 +130,14 @@ class CompanyCreateSerializer(serializers.ModelSerializer):
 
 
 class CompanyLoginSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
     email = serializers.CharField(max_length=255)
+    company_name = serializers.CharField(max_length=255, read_only=True)
+    token = TokenSerializer(read_only=True)
 
     class Meta:
         model = Company
-        fields = ['email', 'password']
+        fields = ['id','email', 'password', 'company_name', 'token']
         extra_kwargs = {'password': {'write_only': True}, 'user_type': {'read_only': True}}
 
 
