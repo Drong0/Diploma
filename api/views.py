@@ -1,5 +1,4 @@
 from django.contrib.auth import authenticate
-from drf_spectacular.utils import extend_schema
 from rest_framework import status, permissions, generics
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView, RetrieveAPIView
@@ -69,6 +68,7 @@ class ClientLoginView(CreateAPIView):
             token = RefreshToken.for_user(user)
             return Response({
                 'id': user.id,
+                'email': CustomUser.objects.get(email=user.email).email,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'refresh_token': str(token),
@@ -122,6 +122,7 @@ class CompanyLoginView(CreateAPIView):
             user = CustomUser.objects.get(email=user['email'])
             token = RefreshToken.for_user(user)
             return Response({'id': user.id,
+                             'email': CustomUser.objects.get(email=user.email).email,
                             'company_name': user.company.company_name,
                              'refresh_token': str(token),
                              'access_token': str(token.access_token)}, status=status.HTTP_200_OK)
