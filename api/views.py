@@ -111,8 +111,8 @@ class CompanyCreateView(generics.GenericAPIView):
                 'email': company.email,
                 'city': company.city_id,
                 'company_description': company.company_description,
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
+                'refresh_token': str(refresh),
+                'access_token': str(refresh.access_token),
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
