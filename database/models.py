@@ -28,7 +28,7 @@ class Specialization(models.Model):
 
 class Vacancy(models.Model):
     name = models.CharField(max_length=255)
-    content = models.TextField(max_length=1000)
+    content = models.TextField(max_length=40000)
     salary_max = models.IntegerField()
     salary_min = models.IntegerField()
     city = models.ForeignKey(City,
