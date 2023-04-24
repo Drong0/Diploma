@@ -112,6 +112,7 @@ CORS_ALLOW_METHODS = [
     'PUT',
 ]
 CORS_ALLOW_CREDENTIALS = True
+SESSION_COOKIE_SECURE = True
 CORS_ALLOW_HEADERS = [
     'accept',
     'accept-encoding',
