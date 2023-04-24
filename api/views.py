@@ -47,6 +47,11 @@ class ClientCreateView(generics.GenericAPIView):
 
             return Response({
                 'id': CustomUser.objects.get(email=client.email).id,
+                'first_name': CustomUser.objects.get(email=client.email).first_name,
+                'last_name': CustomUser.objects.get(email=client.email).last_name,
+                'email': client.email,
+                'city': client.city_id,
+                'phone': client.phone,
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             }, status=status.HTTP_201_CREATED)
@@ -102,6 +107,10 @@ class CompanyCreateView(generics.GenericAPIView):
 
             return Response({
                 'id': CustomUser.objects.get(email=company.email).id,
+                'company_name': company.company_name,
+                'email': company.email,
+                'city': company.city_id,
+                'company_description': company.company_description,
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             }, status=status.HTTP_201_CREATED)
@@ -213,8 +222,9 @@ class ClientProfileView(generics.RetrieveUpdateAPIView, ListCreateAPIView):
     serializer_class = ClientProfileSerializer
     permission_classes = [ClientPermission]
 
-    def get_queryset(self):
-        return Client.objects.filter(id=self.kwargs['pk'])
+    # get the current user
+    def get_object(self):
+        return self.request.user
 
 
 class CompanyProfileView(generics.RetrieveUpdateAPIView, ListCreateAPIView):
