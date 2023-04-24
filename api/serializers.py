@@ -49,14 +49,16 @@ class ClientSerializer(serializers.ModelSerializer):
 
 class ClientLoginSerializer(serializers.ModelSerializer):
     email = serializers.CharField(max_length=255)
-    token = TokenSerializer(read_only=True)
+    refresh_token = serializers.CharField(max_length=255, read_only=True)
+    access_token = serializers.CharField(max_length=255, read_only=True)
     first_name = serializers.CharField(max_length=255, read_only=True)
     last_name = serializers.CharField(max_length=255, read_only=True)
     id = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Client
-        fields = ['email', 'password', 'token', 'first_name', 'last_name', 'id']
+        fields = ['email', 'password', 'refresh_token', 'access_token', 'first_name', 'last_name', 'id']
+        extra_kwargs = {'password': {'write_only': True}}
 
 
 class ClientCreateSerializer(serializers.ModelSerializer):
@@ -133,12 +135,13 @@ class CompanyLoginSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     email = serializers.CharField(max_length=255)
     company_name = serializers.CharField(max_length=255, read_only=True)
-    token = TokenSerializer(read_only=True)
+    refresh_token = serializers.CharField(max_length=255, read_only=True)
+    access_token = serializers.CharField(max_length=255, read_only=True)
 
     class Meta:
         model = Company
-        fields = ['id', 'email', 'password', 'company_name', 'token']
-        extra_kwargs = {'password': {'write_only': True}, 'user_type': {'read_only': True}}
+        fields = ['id', 'email', 'password', 'company_name', 'refresh_token', 'access_token']
+        extra_kwargs = {'password': {'write_only': True}}
 
 
 class VacancyCreateSerializer(serializers.ModelSerializer):
