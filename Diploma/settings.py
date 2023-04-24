@@ -84,6 +84,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'Diploma.csrf.DisableCSRFMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -112,7 +113,6 @@ CORS_ALLOW_METHODS = [
     'PUT',
 ]
 CORS_ALLOW_CREDENTIALS = True
-CSRF_COOKIE_HTTPONLY = True
 CORS_ALLOW_HEADERS = [
     'accept',
     'accept-encoding',
