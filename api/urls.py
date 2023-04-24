@@ -22,7 +22,7 @@ urlpatterns += [
     path('vacancy/<int:pk>/response/', views.ResponseAddView.as_view(), name='response'),
     path('user/favorite/list/', views.FavoriteListView.as_view(), name='favorite'),
     path('vacancy/response/list/', views.ResponseListView.as_view(), name='response'),
-    path('client/profile/<int:pk>', views.ClientProfileView.as_view(), name='profile'),
-    path('company/profile/<int:pk>', views.CompanyProfileView.as_view(), name='profile'),
+    #path('client/profile/<int:pk>', views.ClientProfileView.as_view(), name='profile'),
+    #path('company/profile/<int:pk>', views.CompanyProfileView.as_view(), name='profile'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
 ]

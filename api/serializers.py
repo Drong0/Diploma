@@ -38,12 +38,11 @@ class SpecializationSerializer(serializers.ModelSerializer):
 
 
 class ClientSerializer(serializers.ModelSerializer):
-    token = serializers.CharField(max_length=255, read_only=True)
     city = CitySerializer(read_only=True)
 
     class Meta:
         model = Client
-        fields = ['id', 'token', 'email', 'city', 'first_name', 'last_name', 'phone']
+        fields = ['id', 'email', 'city', 'first_name', 'last_name', 'phone', 'cv']
         extra_kwargs = {'password': {'write_only': True}, 'user_type': {'read_only': True}}
 
 
@@ -94,12 +93,11 @@ class ClientCreateSerializer(serializers.ModelSerializer):
 
 
 class CompanySerializer(serializers.ModelSerializer):
-    token = serializers.CharField(max_length=255, read_only=True)
     city = CitySerializer(read_only=True)
 
     class Meta:
         model = Company
-        fields = ['id', 'token', 'company_name', 'company_description', 'city']
+        fields = ['id', 'company_name', 'company_description', 'city']
         extra_kwargs = {'password': {'write_only': True}, }
 
 
