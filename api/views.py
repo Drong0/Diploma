@@ -132,7 +132,8 @@ class CompanyLoginView(CreateAPIView):
             token = RefreshToken.for_user(user)
             return Response({'id': user.id,
                              'email': CustomUser.objects.get(email=user.email).email,
-                            'company_name': user.company.company_name,
+                             'company_name': user.company.company_name,
+                             'company_description': user.company.company_description,
                              'refresh_token': str(token),
                              'access_token': str(token.access_token)}, status=status.HTTP_200_OK)
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)

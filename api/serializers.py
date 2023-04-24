@@ -135,12 +135,13 @@ class CompanyLoginSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     email = serializers.CharField(max_length=255)
     company_name = serializers.CharField(max_length=255, read_only=True)
+    company_description = serializers.CharField(max_length=255, read_only=True)
     refresh_token = serializers.CharField(max_length=255, read_only=True)
     access_token = serializers.CharField(max_length=255, read_only=True)
 
     class Meta:
         model = Company
-        fields = ['id', 'email', 'password', 'company_name', 'refresh_token', 'access_token']
+        fields = ['id', 'email', 'password', 'company_name', 'refresh_token', 'access_token', 'company_description']
         extra_kwargs = {'password': {'write_only': True}}
 
 
