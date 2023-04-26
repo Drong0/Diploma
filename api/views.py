@@ -17,6 +17,7 @@ from api.serializers import (ClientLoginSerializer,
                              ResponseSerializer, VacancyCreateSerializer, ClientSerializer, CompanySerializer,
                              LogoutSerializer, ClientProfileSerializer, CompanyProfileSerializer, TokenSerializer,
                              )
+from database.customViewsets import ModelViewSetWithoutRetrieve
 from database.models import Response as ResponseModel, Favorite
 from database.models import Vacancy
 from user_auth.models import CustomUser, Client, Company
@@ -140,13 +141,20 @@ class CompanyLoginView(CreateAPIView):
 
 
 # Vacancy Views
-class VacancyCreateView(CreateAPIView):
+class VacancyCreateView(ModelViewSetWithoutRetrieve):
     serializer_class = VacancyCreateSerializer
     permission_classes = [CompanyPermission]
 
-    def post(self, request, *args, **kwargs):
-        request.data['company'] = request.user.id
-        return super().post(request, *args, **kwargs)
+    def create(self, request, *args, **kwargs):
+        request.data['company'] = request.user
+        print(request.data)
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def get_queryset(self):
+        return Vacancy.objects.filter(company=self.request.user)
 
 
 class VacancyListView(ListAPIView):
@@ -184,6 +192,7 @@ class FavoriteAddView(APIView):
 
 class ResponseAddView(APIView):
     permission_classes = [ClientPermission]
+    serializer_class = ResponseSerializer
 
     def post(self, request, pk):
         try:
@@ -191,7 +200,8 @@ class ResponseAddView(APIView):
         except Vacancy.DoesNotExist:
             return Response({'error': 'Vacancy does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
-        response = ResponseModel(vacancy=vacancy, client_id=request.user.id)
+        response = ResponseModel(vacancy=vacancy, client_id=request.user.id,
+                                 response_text=request.data['response_text'])
         response.save()
 
         return Response({'success': 'Vacancy added to responses'}, status=status.HTTP_201_CREATED)

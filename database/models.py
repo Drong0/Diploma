@@ -56,6 +56,7 @@ class Vacancy(models.Model):
 class Response(models.Model):
     vacancy = models.ForeignKey(Vacancy, on_delete=models.CASCADE, null=True, blank=True)
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True)
+    response_text = models.TextField(max_length=40000, null=True, blank=True)
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
