@@ -20,7 +20,7 @@ class Skill(models.Model):
 
 class Specialization(models.Model):
     name = models.CharField(max_length=255)
-    skills = models.ForeignKey(Skill, on_delete=models.CASCADE)
+    skills = models.ManyToManyField(Skill, blank=True)
 
     def __str__(self):
         return self.name
@@ -46,8 +46,8 @@ class Vacancy(models.Model):
         (False, 'Inactive')
     )
     status = models.BooleanField(choices=STATUS, default=True)
-    occupation = models.ForeignKey(Occupation, on_delete=models.CASCADE, null=True, blank=True)
-    specialization = models.ForeignKey(Specialization, on_delete=models.CASCADE, null=True, blank=True)
+    occupation = models.ManyToManyField(Occupation, blank=True)
+    specialization = models.ManyToManyField(Specialization, blank=True)
 
     def __str__(self):
         return self.name

@@ -2,6 +2,7 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from . import views
+from .views import VacancyIDView
 
 router = DefaultRouter()
 
@@ -26,4 +27,5 @@ urlpatterns += [
     #path('client/profile/<int:pk>', views.ClientProfileView.as_view(), name='profile'),
     #path('company/profile/<int:pk>', views.CompanyProfileView.as_view(), name='profile'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
+    path('vacancyIDs/', VacancyIDView.as_view()),
 ]

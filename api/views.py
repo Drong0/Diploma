@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate
-from rest_framework import status, permissions, generics
+from rest_framework import status, permissions, generics, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView, RetrieveAPIView
 from rest_framework.response import Response
@@ -278,3 +278,11 @@ class CompanyViewSet(ModelViewSet):
         queryset = Company.objects.filter(id=self.request.user.id).first()
         serializer = self.get_serializer(queryset, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class VacancyIDView(ListAPIView):
+    serializer_class = VacancySerializer
+
+    def get_queryset(self):
+        ids = self.request.query_params.getlist('id_in')
+        return Vacancy.objects.filter(id__in=ids)
