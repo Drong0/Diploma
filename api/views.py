@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate
-from rest_framework import status, permissions, generics, viewsets
+from rest_framework import status, permissions, generics, viewsets, filters
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView, RetrieveAPIView
 from rest_framework.response import Response
@@ -155,6 +155,16 @@ class VacancyCreateView(ModelViewSetWithoutRetrieve):
 
     def get_queryset(self):
         return Vacancy.objects.filter(company=self.request.user)
+
+
+class VacancySearchView(ListAPIView):
+    serializer_class = VacancySerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
+
+    def get_queryset(self):
+        queryset = Vacancy.objects.all()
+        return queryset
 
 
 class VacancyListView(ListAPIView):
