@@ -11,20 +11,19 @@ class Occupation(models.Model):
         return self.name
 
 
-class Skill(models.Model):
-    name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.name
-
 
 class Specialization(models.Model):
     name = models.CharField(max_length=255)
-    skills = models.ManyToManyField(Skill, blank=True)
 
     def __str__(self):
         return self.name
 
+class Skill(models.Model):
+    name = models.CharField(max_length=255)
+    specialization = models.ForeignKey(Specialization, on_delete=models.CASCADE, related_name="specialization", null=True, blank=True)
+
+    def __str__(self):
+        return self.name
 
 class Vacancy(models.Model):
     name = models.CharField(max_length=255)
