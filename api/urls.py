@@ -9,6 +9,7 @@ router = DefaultRouter()
 router.register("clients", views.ClientViewSet)
 router.register("companies", views.CompanyViewSet)
 router.register("vacancy", views.VacancyCreateView, basename="vacancy")
+router.register("skill", views.SkillView, basename="skill")
 urlpatterns = router.urls
 urlpatterns += [
     path('client/register/', views.ClientCreateView.as_view(), name='register'),
@@ -28,5 +29,4 @@ urlpatterns += [
     path('vacancyIDs/', VacancyIDView.as_view()),
     path('vacancySearch/', views.VacancySearchView.as_view(), name='search'),
     path('specialization/', views.SpecializationView.as_view(), name='specialization'),
-    path('skill/', views.SkillView.as_view(), name='skill'),
 ]

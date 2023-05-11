@@ -16,7 +16,7 @@ from api.serializers import (ClientLoginSerializer,
                              FavoriteSerializer,
                              ResponseSerializer, VacancyCreateSerializer, ClientSerializer, CompanySerializer,
                              LogoutSerializer, ClientProfileSerializer, CompanyProfileSerializer, TokenSerializer,
-                             SpecializationSerializer, SkillSerializer,
+                             SpecializationSerializer, SkillSerializer, SkillCreateSerializer,
                              )
 from chat.models import Message, Chat, Contact
 from chat.views import get_user_contact
@@ -335,7 +335,6 @@ class SpecializationView(ListCreateAPIView):
     queryset = Specialization.objects.all()
 
 
-class SkillView(ListCreateAPIView):
-    serializer_class = SkillSerializer
+class SkillView(ModelViewSet):
+    serializer_class = SkillCreateSerializer
     queryset = Skill.objects.all()
-
