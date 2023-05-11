@@ -25,16 +25,19 @@ class OccupationSerialazer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class SkillSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Skill
-        fields = '__all__'
-
 
 class SpecializationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Specialization
         fields = '__all__'
+
+class SkillSerializer(serializers.ModelSerializer):
+    specialization = SpecializationSerializer(many=True)
+
+    class Meta:
+        model = Skill
+        fields = ['id', 'name', 'specialization']
+
 
 
 class ClientSerializer(serializers.ModelSerializer):
