@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['drongo.pythonanywhere.com']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,7 +43,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'drf_spectacular',
-    'corsheaders'
+    'corsheaders',
+    'rest_framework_simplejwt.token_blacklist',
+    'channels',
+    'channels_redis',
+    'chat',
 
 ]
 SPECTACULAR_SETTINGS = {
@@ -95,12 +100,15 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
+    'http://localhost:3007',
     'http://127.0.0.1:3007',
 ]
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'http://127.0.0.1:3007',
+    'http://localhost:3007',
+
 ]
 CORS_ALLOW_METHODS = [
     'DELETE',
@@ -142,6 +150,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'Diploma.wsgi.application'
+ASGI_APPLICATION = 'Diploma.asgi.application'
+
 
 DATABASES = {
     'default': {
@@ -200,4 +210,13 @@ MEDIA_ROOT = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
+
 ]
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('redis-15851.c90.us-east-1-3.ec2.cloud.redislabs.com', 6379,'AkLnhaUUGoUZ3uL24GWCTil872nuT9pH')],
+        },
+    },
+}

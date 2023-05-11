@@ -203,19 +203,19 @@ class FavoriteAddView(APIView):
     #     return super().post(request, *args, **kwargs)
 
 
-# def get_or_create_chat(contact1, contact2):
-#     """
-#     Find or create a chat between two contacts.
-#     """
-#     chat = None
-#     for c in contact1.chats.all():
-#         if c in contact2.chats.all():
-#             chat = c
-#             break
-#     if not chat:
-#         chat = Chat.objects.create()
-#         chat.participants.add(contact1, contact2)
-#     return chat
+def get_or_create_chat(contact1, contact2):
+    """
+    Find or create a chat between two contacts.
+    """
+    chat = None
+    for c in contact1.chats.all():
+        if c in contact2.chats.all():
+            chat = c
+            break
+    if not chat:
+        chat = Chat.objects.create()
+        chat.participants.add(contact1, contact2)
+    return chat
 
 
 class ResponseAddView(APIView):
@@ -230,20 +230,20 @@ class ResponseAddView(APIView):
 
         response = ResponseModel(vacancy=vacancy, client_id=request.user.id,
                                  response_text=request.data['response_text'])
-        # company = Company.objects.get(id=vacancy.company_id)
-        # client_contact = Contact.objects.create(user=request.user)
-        # company_contact = Contact.objects.filter(user=company).first()
-        # if not company_contact:
-        #     company_contact = Contact.objects.create(user=company)
-        #
-        # chat = Chat.objects.create()
-        # chat.save()
-        # chat.participants.add(client_contact, company_contact)
-        #
-        # message = Message.objects.create(
-        #     contact=client_contact,
-        #     content=request.data['response_text'])
-        # chat.messages.add(message)
+        company = Company.objects.get(id=vacancy.company_id)
+        client_contact = Contact.objects.create(user=request.user)
+        company_contact = Contact.objects.filter(user=company).first()
+        if not company_contact:
+            company_contact = Contact.objects.create(user=company)
+
+        chat = Chat.objects.create()
+        chat.save()
+        chat.participants.add(client_contact, company_contact)
+
+        message = Message.objects.create(
+            contact=client_contact,
+            content=request.data['response_text'])
+        chat.messages.add(message)
         response.save()
 
         return Response({'success': 'Vacancy added to responses'}, status=status.HTTP_201_CREATED)

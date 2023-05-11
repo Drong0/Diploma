@@ -8,6 +8,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 from django.conf.urls.static import static
 from django.conf import settings
 
+from chat.api import urls as chat_urls
 schema_view = get_schema_view(
     openapi.Info(
         title="Snippets API",
@@ -36,5 +37,6 @@ urlpatterns = [
                   path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
                   path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
                   path('api/schema/json/', SpectacularJSONAPIView.as_view(), name='json'),
+                  path("chat/", include(chat_urls)),
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

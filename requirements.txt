@@ -46,3 +46,5 @@ sqlparse==0.4.3
 tzdata==2022.7
 uritemplate==4.1.1
 urllib3==1.26.13
+channels~=4.0.0
+channels-redis~=3.3.0
