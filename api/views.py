@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from django.db import transaction
 from api.filters import VacancyFilter
 from api.serializers import (ClientLoginSerializer,
                              ClientCreateSerializer,
@@ -16,9 +16,12 @@ from api.serializers import (ClientLoginSerializer,
                              FavoriteSerializer,
                              ResponseSerializer, VacancyCreateSerializer, ClientSerializer, CompanySerializer,
                              LogoutSerializer, ClientProfileSerializer, CompanyProfileSerializer, TokenSerializer,
+                             SpecializationSerializer, SkillSerializer,
                              )
+from chat.models import Message, Chat, Contact
+from chat.views import get_user_contact
 from database.customViewsets import ModelViewSetWithoutRetrieve
-from database.models import Response as ResponseModel, Favorite
+from database.models import Response as ResponseModel, Favorite, Specialization, Skill
 from database.models import Vacancy
 from user_auth.models import CustomUser, Client, Company
 
@@ -200,6 +203,21 @@ class FavoriteAddView(APIView):
     #     return super().post(request, *args, **kwargs)
 
 
+# def get_or_create_chat(contact1, contact2):
+#     """
+#     Find or create a chat between two contacts.
+#     """
+#     chat = None
+#     for c in contact1.chats.all():
+#         if c in contact2.chats.all():
+#             chat = c
+#             break
+#     if not chat:
+#         chat = Chat.objects.create()
+#         chat.participants.add(contact1, contact2)
+#     return chat
+
+
 class ResponseAddView(APIView):
     permission_classes = [ClientPermission]
     serializer_class = ResponseSerializer
@@ -212,6 +230,20 @@ class ResponseAddView(APIView):
 
         response = ResponseModel(vacancy=vacancy, client_id=request.user.id,
                                  response_text=request.data['response_text'])
+        # company = Company.objects.get(id=vacancy.company_id)
+        # client_contact = Contact.objects.create(user=request.user)
+        # company_contact = Contact.objects.filter(user=company).first()
+        # if not company_contact:
+        #     company_contact = Contact.objects.create(user=company)
+        #
+        # chat = Chat.objects.create()
+        # chat.save()
+        # chat.participants.add(client_contact, company_contact)
+        #
+        # message = Message.objects.create(
+        #     contact=client_contact,
+        #     content=request.data['response_text'])
+        # chat.messages.add(message)
         response.save()
 
         return Response({'success': 'Vacancy added to responses'}, status=status.HTTP_201_CREATED)
@@ -296,3 +328,14 @@ class VacancyIDView(ListAPIView):
     def get_queryset(self):
         ids = self.request.query_params.getlist('id_in')
         return Vacancy.objects.filter(id__in=ids)
+
+
+class SpecializationView(ListCreateAPIView):
+    serializer_class = SpecializationSerializer
+    queryset = Specialization.objects.all()
+
+
+class SkillView(ListCreateAPIView):
+    serializer_class = SkillSerializer
+    queryset = Skill.objects.all()
+
