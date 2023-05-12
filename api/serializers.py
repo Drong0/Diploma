@@ -177,6 +177,15 @@ class FavoriteSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ResponseAddSerializer(serializers.ModelSerializer):
+    vacancy = VacancySerializer(read_only=True, many=False)
+    client = ClientSerializer(read_only=True, many=False)
+
+    class Meta:
+        model = Response
+        fields = ['id', 'vacancy', 'client', 'date', 'response_text']
+
+
 class ResponseSerializer(serializers.ModelSerializer):
     vacancy = VacancySerializer(read_only=True, many=False)
     client = ClientSerializer(read_only=True, many=False)

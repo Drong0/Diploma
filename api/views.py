@@ -16,7 +16,7 @@ from api.serializers import (ClientLoginSerializer,
                              FavoriteSerializer,
                              ResponseSerializer, VacancyCreateSerializer, ClientSerializer, CompanySerializer,
                              LogoutSerializer, ClientProfileSerializer, CompanyProfileSerializer, TokenSerializer,
-                             SpecializationSerializer, SkillSerializer, SkillCreateSerializer,
+                             SpecializationSerializer, SkillSerializer, SkillCreateSerializer, ResponseAddSerializer,
                              )
 from chat.models import Message, Chat, Contact
 from chat.views import get_user_contact
@@ -220,7 +220,7 @@ def get_or_create_chat(contact1, contact2):
 
 class ResponseAddView(APIView):
     permission_classes = [ClientPermission]
-    serializer_class = ResponseSerializer
+    serializer_class = ResponseAddSerializer
 
     def post(self, request, pk):
         try:
@@ -244,6 +244,7 @@ class ResponseAddView(APIView):
             contact=client_contact,
             content=request.data['response_text'])
         chat.messages.add(message)
+        print(chat.messages.all())
         response.save()
 
         return Response({'success': 'Vacancy added to responses'}, status=status.HTTP_201_CREATED)
@@ -338,3 +339,20 @@ class SpecializationView(ListCreateAPIView):
 class SkillView(ModelViewSet):
     serializer_class = SkillCreateSerializer
     queryset = Skill.objects.all()
+
+
+class ResponseByVacancyView(ListAPIView, APIView):
+    serializer_class = ResponseSerializer
+    permission_classes = [CompanyPermission]
+
+    def get_queryset(self):
+        return ResponseModel.objects.filter(vacancy__company=self.request.user, vacancy=self.kwargs['pk'])
+
+    def post(self, request, pk):
+        try:
+            response = ResponseModel.objects.filter(vacancy__company=self.request.user, vacancy=self.kwargs['pk'])
+        except ResponseModel.DoesNotExist:
+            return Response({'error': 'Response does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        response.status = request.data['status']
+        response.save()
+        return Response({'success': 'Response status changed'}, status=status.HTTP_200_OK)
