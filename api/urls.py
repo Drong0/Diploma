@@ -23,9 +23,9 @@ urlpatterns += [
 
     path('allVacancy/', views.VacancyListView.as_view(), name='vacancies'),
     path('vacancyByID/<int:pk>', views.VacancyDetailView.as_view(), name='vacancies'),
-    path('user/like/<int:pk>', views.FavoriteAddView.as_view(), name='like'),
+    path('like/<int:pk>', views.FavoriteAddView.as_view(), name='like'),
     path('responseAdd/<int:pk>/', views.ResponseAddView.as_view(), name='response'),
-    path('user/like/list/', views.FavoriteListView.as_view(), name='favorite'),
+    path('like/list/', views.FavoriteListView.as_view(), name='favorite'),
     path('myResponse/list/', views.ResponseListView.as_view(), name='response'),
 
     path('logout/', views.LogoutView.as_view(), name='logout'),
@@ -33,5 +33,5 @@ urlpatterns += [
     path('vacancySearch/', views.VacancySearchView.as_view(), name='search'),
     path('responseByVacancy/<int:pk>/', views.ResponseByVacancyView.as_view(), name='response'),
     path('responseByIdUpdate/<int:pk>/', views.ResponseUpdateView.as_view(), name='response'),
-    path('user/like/<int:pk>/', views.FavoriteDeleteView.as_view(), name='favorite'),
+    path('like/<int:pk>/', views.FavoriteDeleteView.as_view(), name='favorite'),
 ]
