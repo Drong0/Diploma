@@ -1,12 +1,12 @@
 from django.contrib.auth import authenticate
-from rest_framework import status, permissions, generics, viewsets, filters
+from rest_framework import status, permissions, generics, viewsets, filters, mixins
 from rest_framework.decorators import action
-from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView, RetrieveAPIView, UpdateAPIView, \
+    DestroyAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.db import transaction
 from api.filters import VacancyFilter
 from api.serializers import (ClientLoginSerializer,
                              ClientCreateSerializer,
@@ -17,11 +17,12 @@ from api.serializers import (ClientLoginSerializer,
                              ResponseSerializer, VacancyCreateSerializer, ClientSerializer, CompanySerializer,
                              LogoutSerializer, ClientProfileSerializer, CompanyProfileSerializer, TokenSerializer,
                              SpecializationSerializer, SkillSerializer, SkillCreateSerializer, ResponseAddSerializer,
+                             ResponsePostSerializer, OccupationSerializer
                              )
 from chat.models import Message, Chat, Contact
 from chat.views import get_user_contact
 from database.customViewsets import ModelViewSetWithoutRetrieve
-from database.models import Response as ResponseModel, Favorite, Specialization, Skill
+from database.models import Response as ResponseModel, Favorite, Specialization, Skill, Occupation
 from database.models import Vacancy
 from user_auth.models import CustomUser, Client, Company
 
@@ -331,7 +332,7 @@ class VacancyIDView(ListAPIView):
         return Vacancy.objects.filter(id__in=ids)
 
 
-class SpecializationView(ListCreateAPIView):
+class SpecializationView(ModelViewSet):
     serializer_class = SpecializationSerializer
     queryset = Specialization.objects.all()
 
@@ -341,18 +342,73 @@ class SkillView(ModelViewSet):
     queryset = Skill.objects.all()
 
 
-class ResponseByVacancyView(ListAPIView, APIView):
+# class ResponseByVacancyView(ListAPIView, APIView):
+#     serializer_class = ResponseSerializer
+#     permission_classes = [CompanyPermission]
+#
+#     def get_queryset(self):
+#         return ResponseModel.objects.filter(vacancy__company=self.request.user, vacancy=self.kwargs['pk'])
+#
+#     def put(self, request, pk):
+#         response = self.get_queryset().filter(vacancy__company=self.request.user, vacancy=self.kwargs['pk'])
+#         serializer = self.serializer_class(response, data=request.data, partial=True)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#
+#     #
+# def post(self, request, pk):
+#     try:
+#         response = ResponseModel.objects.filter(vacancy__company=self.request.user, vacancy=self.kwargs['pk'])
+#     except ResponseModel.DoesNotExist:
+#         return Response({'error': 'Response does not exist'}, status=status.HTTP_404_NOT_FOUND)
+#     response.status = request.data['status']
+#     response.save()
+#     return Response({'success': 'Response status changed'}, status=status.HTTP_200_OK)
+
+
+class CompanyResponseView(mixins.DestroyModelMixin,
+                          mixins.ListModelMixin,
+                          GenericViewSet):
+    serializer_class = ResponseSerializer
+    queryset = ResponseModel.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        queryset = ResponseModel.objects.filter(vacancy__company=self.request.user)
+        serializer = ResponseSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+class ResponseByVacancyView(ListAPIView):
     serializer_class = ResponseSerializer
     permission_classes = [CompanyPermission]
 
     def get_queryset(self):
         return ResponseModel.objects.filter(vacancy__company=self.request.user, vacancy=self.kwargs['pk'])
 
-    def post(self, request, pk):
-        try:
-            response = ResponseModel.objects.filter(vacancy__company=self.request.user, vacancy=self.kwargs['pk'])
-        except ResponseModel.DoesNotExist:
-            return Response({'error': 'Response does not exist'}, status=status.HTTP_404_NOT_FOUND)
-        response.status = request.data['status']
-        response.save()
-        return Response({'success': 'Response status changed'}, status=status.HTTP_200_OK)
+
+class ResponseUpdateView(UpdateAPIView):
+    serializer_class = ResponsePostSerializer
+    permission_classes = [CompanyPermission]
+
+    def get_queryset(self):
+        return ResponseModel.objects.filter(id=self.kwargs['pk'])
+
+
+class SkillSerializerView(ModelViewSet):
+    serializer_class = SkillSerializer
+    queryset = Skill.objects.all()
+
+
+class OccupationView(ModelViewSet):
+    serializer_class = OccupationSerializer
+    queryset = Occupation.objects.all()
+
+
+class FavoriteDeleteView(DestroyAPIView):
+    serializer_class = FavoriteSerializer
+    permission_classes = [ClientPermission]
+
+    def get_queryset(self):
+        return Favorite.objects.filter(client=self.request.user, id = self.kwargs['pk'])

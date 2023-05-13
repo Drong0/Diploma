@@ -10,6 +10,9 @@ router.register("clients", views.ClientViewSet)
 router.register("companies", views.CompanyViewSet)
 router.register("vacancy", views.VacancyCreateView, basename="vacancy")
 router.register("skill", views.SkillView, basename="skill")
+router.register("occupation", views.OccupationView, basename="occupation")
+router.register("specialization", views.SpecializationView, basename="specialization")
+router.register("companyResponse", views.CompanyResponseView, basename="companyResponse")
 urlpatterns = router.urls
 urlpatterns += [
     path('client/register/', views.ClientCreateView.as_view(), name='register'),
@@ -20,7 +23,7 @@ urlpatterns += [
 
     path('allVacancy/', views.VacancyListView.as_view(), name='vacancies'),
     path('vacancyByID/<int:pk>', views.VacancyDetailView.as_view(), name='vacancies'),
-    path('like/<int:pk>', views.FavoriteAddView.as_view(), name='like'),
+    path('user/like/<int:pk>', views.FavoriteAddView.as_view(), name='like'),
     path('responseAdd/<int:pk>/', views.ResponseAddView.as_view(), name='response'),
     path('user/like/list/', views.FavoriteListView.as_view(), name='favorite'),
     path('myResponse/list/', views.ResponseListView.as_view(), name='response'),
@@ -28,6 +31,7 @@ urlpatterns += [
     path('logout/', views.LogoutView.as_view(), name='logout'),
     path('vacancyIDs/', VacancyIDView.as_view()),
     path('vacancySearch/', views.VacancySearchView.as_view(), name='search'),
-    path('specialization/', views.SpecializationView.as_view(), name='specialization'),
-    path('response/<int:pk>', views.ResponseByVacancyView.as_view(), name='response'),
+    path('responseByVacancy/<int:pk>/', views.ResponseByVacancyView.as_view(), name='response'),
+    path('responseByIdUpdate/<int:pk>/', views.ResponseUpdateView.as_view(), name='response'),
+    path('user/like/<int:pk>/', views.FavoriteDeleteView.as_view(), name='favorite'),
 ]
