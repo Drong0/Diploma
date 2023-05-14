@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-*a3w0op937j*o=5jo^d^apfq!2mc(xpn$qiu($#@d6ijf5ococ
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['drongo.pythonanywhere.com']
+ALLOWED_HOSTS = ['drongo.pythonanywhere.com', '127.0.0.1']
 
 # Application definition
 
@@ -214,9 +214,9 @@ STATICFILES_DIRS = [
 ]
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [('redis-15851.c90.us-east-1-3.ec2.cloud.redislabs.com', 6379,'AkLnhaUUGoUZ3uL24GWCTil872nuT9pH')],
-        },
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        # 'CONFIG': {
+        #     'hosts': [('redis-15851.c90.us-east-1-3.ec2.cloud.redislabs.com', 6379,'AkLnhaUUGoUZ3uL24GWCTil872nuT9pH')],
+        # },
     },
 }

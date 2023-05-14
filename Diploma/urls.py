@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 from chat.api import urls as chat_urls
+from chat import urls as chat_urls2
 # schema_view = get_schema_view(
 #     openapi.Info(
 #         title="Snippets API",
@@ -35,5 +36,6 @@ urlpatterns = [
                   path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
                   path('api/schema/json/', SpectacularJSONAPIView.as_view(), name='json'),
                   path("api/chat/", include(chat_urls)),
+                  path("", include(chat_urls2)),
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
