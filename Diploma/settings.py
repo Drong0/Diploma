@@ -160,7 +160,7 @@ DATABASES = {
     }
 }
 JWT_AUTH = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=60),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=50),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
