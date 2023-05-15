@@ -34,4 +34,5 @@ urlpatterns += [
     path('responseByVacancy/<int:pk>/', views.ResponseByVacancyView.as_view(), name='response'),
     path('responseByIdUpdate/<int:pk>/', views.ResponseUpdateView.as_view(), name='response'),
     path('like/<int:pk>/', views.FavoriteDeleteView.as_view(), name='favorite'),
+    path('download/cv/<int:pk>/', views.DownloadCVView.as_view(), name='download'),
 ]

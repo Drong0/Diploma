@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate
+from django.http import FileResponse
 from rest_framework import status, permissions, generics, viewsets, filters, mixins
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView, RetrieveAPIView, UpdateAPIView, \
@@ -412,3 +413,10 @@ class FavoriteDeleteView(DestroyAPIView):
 
     def get_queryset(self):
         return Favorite.objects.filter(client=self.request.user, id = self.kwargs['pk'])
+
+class DownloadCVView(APIView):
+    def get(self, request, pk):
+        client = Client.objects.get(id=pk)
+        cv = client.cv
+        response = FileResponse(cv, as_attachment=True,)
+        return response
