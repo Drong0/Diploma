@@ -6,6 +6,8 @@ from channels.security.websocket import AllowedHostsOriginValidator
 from django.core.asgi import get_asgi_application
 
 import chat.routing
+from django.conf import settings
+settings.configure()
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Diploma.settings")
 django_app = get_asgi_application()
 
