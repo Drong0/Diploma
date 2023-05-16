@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-*a3w0op937j*o=5jo^d^apfq!2mc(xpn$qiu($#@d6ijf5ococ
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['drongo.pythonanywhere.com', '127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -204,14 +204,14 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STATIC_URL = 'static/'
 MEDIA_ROOT = '/static/'
+STATIC_ROOT = os.environ.get('STATIC_ROOT', BASE_DIR.joinpath('static'))
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static')
-
-]
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'static')
+#
+# ]
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels.layers.InMemoryChannelLayer',
