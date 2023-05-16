@@ -48,3 +48,4 @@ uritemplate==4.1.1
 urllib3==1.26.13
 channels
 channels-redis
+daphne
