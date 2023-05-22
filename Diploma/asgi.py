@@ -1,5 +1,4 @@
-from django.conf import settings
-settings.configure()
+
 import os
 
 from channels.auth import AuthMiddlewareStack
