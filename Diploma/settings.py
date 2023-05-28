@@ -103,11 +103,17 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3007',
     'http://localhost:3007',
+    'https://diploma-seven.vercel.app/',
+    'https://diploma-seven.vercel.app',
+    
 ]
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
     'http://localhost:3007',
     'http://localhost:3007',
+    'https://diploma-seven.vercel.app/',
+    'https://diploma-seven.vercel.app',
+ 
 
 ]
 CORS_ALLOW_METHODS = [
