@@ -19,7 +19,7 @@ class ChatListView(ListAPIView):
     permission_classes = (permissions.IsAuthenticated, )
 
     def get_queryset(self):
-        queryset = Chat.objects.all()
+        queryset = Chat.objects.filter(participants__user=self.request.user)
         email = self.request.query_params.get('email', None)
         if email is not None:
             contact = get_user_contact(email)
