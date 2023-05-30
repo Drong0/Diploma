@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from chat.models import Chat, Contact
+from chat.models import Chat, Contact, Message
 from chat.views import get_user_contact
 
 
@@ -9,7 +9,15 @@ class ContactSerializer(serializers.StringRelatedField):
         return value
 
 
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ('id', 'contact', 'content', 'timestamp')
+        read_only_fields = ('id', 'timestamp')
+
+
 class ChatSerializer(serializers.ModelSerializer):
+    messages = MessageSerializer(many=True, read_only=True)
     participants = ContactSerializer(many=True)
 
     class Meta:
